@@ -500,9 +500,13 @@ graph TD
 > - most important quality attribute scenarios
 
 ## Step 2. Establish the iteration goal by selecting architectural drivers
+TBD
 ## Step 3. Choose one or more elements of the system to refine
+TBD
 ## Step 4. Choose one or more design concepts that satisfy the selected drivers
+TBD
 ## Step 5. Instantiate Architectural Elements, allocate responsibilities and defined interfaces
+TBD
 ## Step 6. Sketch views and record design decisions
 - Diagrams
 - RFCs
