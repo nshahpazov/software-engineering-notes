@@ -8,7 +8,7 @@ status: notes
 
 # Microservices
 
-The microservices approach is all about handling a complex system, but in order to do so, the approach introduces it's own set of complexities. When you use microservices, you need to
+The microservices approach is all about handling a complex system, but in order to do so, the approach introduces its own set of complexities. When you use microservices, you need to
 - have to work on automated deployment
 - monitoring
 - logging
@@ -25,7 +25,7 @@ There are mechanisms to handle those complexities, but they require extra effort
 
 Other problems that arise with microservices are:
 - Multiple deployable units
-- Versioning and Compatability
+- Versioning and Compatibility
 - Inter-service communication and Service Discovery / Configuration
 - Security and Secrets
 

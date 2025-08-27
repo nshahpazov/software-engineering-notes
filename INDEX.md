@@ -1,12 +1,13 @@
 ## Index
 
 ### Architecture
-- [Software Architecture Notes](./Architecture/Software%20Architecture%20Notes.md)
-- [Architecture Notes](./Architecture/Architecture%20Notes.md)
+- [Software Architecture Notes](./Architecture/software-architrecture-notes.md)
+- [Books on Software Architecture](./Architecture/literature.md)
 - [Microservices](./Architecture/microservices.md)
 
-### Cloud & AWS
-- [S3, EC2, ASG, ECS Notes](./Cloud%20&%20AWS/draft.md)
+### AWS
+- [Cost](./AWS/cost.md)
+- [General](./AWS/general.md)
 
 ### Kubernetes & Containers
 - [Docker, Kubernetes, and EKS Notes](./Kubernetes%20&%20Containers/notes.md)
@@ -22,4 +23,5 @@
 ### Operations & Observability
 - [Business Health Check Example](./Operations%20&%20Observability/business-health-check-example.md)
 
-
+### Templates
+- [Note Template](./templates/note-template.md)

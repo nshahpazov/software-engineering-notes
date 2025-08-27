@@ -8,3 +8,4 @@
 - [Decision making principles for better software design](https://dl.acm.org/doi/abs/10.1109/MS.2021.3102358)
 - [Grokking the system design interview](https://www.designgurus.io/course/grokking-the-system-design-interview)
 - [Designing data intensive applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
+- [AOOSA](https://aosabook.org/en/index.html)
