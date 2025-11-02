@@ -49,3 +49,4 @@ This document consists of
 - ADR - Architecture Decision Record - Lightweight doc capturing a key decision, context, options, and consequences.
 - Stakeholder - Anyone impacted by the system; informs requirements and constraints.
 - Trade-off - An explicit choice balancing competing drivers (e.g., performance vs. cost).
+- Solutioneering - the act of creating a solution before understanding the true root of the problem
