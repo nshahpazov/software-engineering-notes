@@ -36,6 +36,13 @@ Amazon S3 offers a range of storage classes to meet different use cases and cost
 ✅ EBS Provisioned IOPS: High-performance databases like PostgreSQL, Oracle, or MongoDB that require data durability.
 ✅ Instance Store (e.g., i3, i4, d2): Applications like Apache Spark, Elasticsearch, or Redis where speed matters more than durability.
 
+### 
+EBS Provisioned IOPS SSD is designed for I/O-intensive applications such as large relational or NoSQL databases. It is though, Block storage attached to a single instance, Not a shared file system across multiple instances and not something that “integrates with Active Directory” in any managed sense.
+
+### Amazon FSx for Windows File Server
+
+Amazon FSx for Windows File Server provides a fully managed native Microsoft Windows file system so you can easily move your Windows-based applications that require file storage to AWS. It is built on Windows Server and supports the SMB protocol, Windows NTFS, and Active Directory (AD) integration. It is ideal for use cases such as home directories, media workflows, and business applications that require shared file storage.
+
 
 You can configure your own grace period for ASG. Default is 300 seconds. The grace period is the time that EC2 Auto Scaling waits before checking the health status of an instance after it comes into service. During this time, EC2 Auto Scaling does not count the instance as healthy or unhealthy. This allows time for the application to start and become healthy before EC2 Auto Scaling begins to check its health status.
 
@@ -114,4 +121,33 @@ You can use an ECR private registry to manage private image repositories consist
 
 - ECR is a regional service. Repos live in a single region unless you replicate them. Pulling from a different region works, but it’s slower and may cost you cross-region data transfer.
 
+### S3 Object Lock
+S3 Object Lock is a feature that allows you to store objects using a write-once-read-many (WORM) model. It can help you prevent objects from being deleted or overwritten for a fixed amount of time or indefinitely. This is useful for regulatory compliance, data retention, and protection against accidental deletion or modification.
 
+- Retention Period: You can specify a retention period for each object, during which it cannot be deleted or modified. The retention period can be set in days or years.
+- Legal Hold: Similar to the retention period, but it has no expiration date. Instead, a legal hold remains in place until you explicitly remove it. Legal holds are independent from retention periods and are placed on individual object versions.
+
+> Object Lock works only in buckets that have S3 Versioning enabled. When you lock an object version, Amazon S3 stores the lock information in the metadata for that object version. When you lock an object version, Amazon S3 stores the lock information in the metadata for that object version. Placing a retention period or a legal hold on an object protects only the version that's specified in the request. Retention periods and legal holds don't prevent new versions of the object from being created, or delete markers to be added on top of the object. 
+
+
+## S3 Retrieval Options
+
+When you store objects in S3 Glacier or S3 Glacier Deep Archive, you have several retrieval options to choose from, each with different retrieval times and costs:
+
+- Expedited Retrieval: This option allows you to quickly access your data when you need it urgently. Expedited retrievals typically take 1-5 minutes to complete. This option is ideal for emergency situations where you need immediate access to your data. Expedited retrievals incur higher costs compared to other retrieval options.
+- Standard Retrieval: This option is suitable for most use cases where you can afford to wait a bit longer for your data. Standard retrievals typically take 3-5 hours to complete. This option offers a balance between cost and retrieval time, making it a popular choice for many users.
+- Bulk Retrieval: This option is the most cost-effective way to retrieve large amounts of data from S3 Glacier or S3 Glacier Deep Archive. Bulk retrievals typically take 5-12 hours to complete. This option is ideal for non-urgent data access needs, such as large-scale data analysis or archival purposes. Bulk retrievals have the lowest cost among the three options.
+
+## Provisioned capacity
+
+Amazon S3 Glacier and S3 Glacier Deep Archive offer a provisioned capacity option that allows you to reserve a specific amount of retrieval capacity in advance. This is particularly useful if you have predictable retrieval needs and want to ensure that you have the necessary capacity available when you need it.
+
+- How many expedited retrievals you can perform per day
+- How much throughput you can get while doing so.
+
+Why does it exist? Because simply using expedited retrievals on-demand can sometimes lead to throttling if many users are trying to access data at the same time. By provisioning capacity, you can avoid this issue and ensure that your expedited retrievals are processed quickly and reliably.
+
+> Provisioned capacity is basically: “I’m paying extra so you’ll always have a lane open for my emergency restores.”
+### What do you get per unit of provisioned capacity?
+- at least 3 expedited retrievals every 5 minutes
+- up to 150 MB/s of retrieval throughput
