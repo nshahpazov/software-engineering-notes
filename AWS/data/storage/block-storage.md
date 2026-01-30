@@ -44,6 +44,11 @@ Think of it like managed NetApp storage in AWS that can present storage to serve
 - simplifies migrating from on-premises NetApp systems to AWS for users currently utilizing NetApp storage
 
 
+## Amazon FSx For Lustre
+
+Amazon FSx for Lustre is a high-performance **parallel** file system optimized for fast processing of workloads such as machine learning, high-performance computing (HPC), and big data analytics. It can be linked to Amazon S3, allowing you to process data stored in S3 with low latency and high throughput.
+Parallel here means that multiple compute nodes can access and read/write to the file system simultaneously, distributing the workload and improving performance for data-intensive applications.
+
 
 
 ## Storage Gateway – Volume Gateway (iSCSI) — hybrid block storage

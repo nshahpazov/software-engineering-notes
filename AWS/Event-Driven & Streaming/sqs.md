@@ -67,7 +67,7 @@ Amazon SQS is a fully managed message queuing service that enables you to decoup
 ### Access Control
 - IAM policies
 - SQS access policies (resource-based)
-- VPC endpoints for private access
+- VPC endpoints for private access (VPC endpoints are endpoints that allow private connections between your VPC and supported AWS services without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection.)
 
 ## Integration Patterns
 

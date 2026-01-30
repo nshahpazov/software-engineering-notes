@@ -22,6 +22,27 @@ A **reverse proxy** sits in front of backend services and handles incoming clien
 
 CloudFront is a globally distributed **CDN + reverse proxy** that delivers static and dynamic content with low latency.
 
+### AWS Cloudfront Overview
+AWS CloudFront is a content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to customers globally with low latency and high transfer speeds. It integrates with other AWS services to provide a seamless experience for developers and businesses looking to distribute content efficiently.
+
+Note: You can reduce 503 (Gateway Timeout) errors by providing a failover origin (secondary origin) in CloudFront distribution settings. This way, if the primary origin becomes unavailable, CloudFront can automatically route requests to the secondary origin, ensuring continued availability of your content.
+
+
+### AWS CloudFront Lambda@Edge
+Lambda@edge is a feature of Amazon CloudFront that allows you to run AWS Lambda functions at AWS edge locations in response to CloudFront events. This enables you to customize the content that CloudFront delivers, execute code closer to your users, and improve performance by reducing latency. For example it can be used for: 
+- validate a token/JWT at the edge,
+- do redirects, header normalization, request routing,
+- short-circuit obviously invalid/unauthorized requests,
+- reduce repeated origin calls.
+- Customize the content that the CloudFront web distribution delivers to your users using Lambda@Edge, which allows your AWS Lambda functions to execute the authentication process in AWS locations closer to the users.
+
+This should improve performance and reduce load on origin servers by handling common tasks at the edge.
+The functions run in response to CloudFront events, without provisioning or managing servers. You can use Lambda functions to change CloudFront requests and responses at the following points:
+- After CloudFront receives a request from a viewer (viewer request)
+- Before CloudFront forwards the request to the origin (origin request)
+-  After CloudFront receives the response from the origin (origin response)
+- Before CloudFront forwards the response to the viewer (viewer response)
+
 ### Key Features
 
 1. **Global Edge Network**  

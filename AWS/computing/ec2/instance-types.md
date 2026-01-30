@@ -5,6 +5,7 @@
 - **m5, m6g**: Balanced compute, memory, and networking resources for a wide range of applications.
 
 Good for a variety of diverse workloads. If you are unsure which instance type to choose, start with general purpose instances.
+They provide a balance of compute, memory, and networking resources, and can be used for a variety of workloads.
 
 ##### Examples
 - Web and application servers
@@ -16,6 +17,9 @@ Good for a variety of diverse workloads. If you are unsure which instance type t
 ### Compute Optimized (C Series)
 
 Compute optimized instances are rich on CPU resources instead of memory. They are well suited for compute-bound applications that benefit from high-performance processors.
+They are ideal for compute-bound applications that benefit from high-performance processors, such as batch processing workloads and media transcoding.
+
+
 
 ##### Examples
 - Batch processing
@@ -29,6 +33,9 @@ Compute optimized instances are rich on CPU resources instead of memory. They ar
 ### Memory Optimized (R Series, X Series, U Series)
 
 Those instances are a lot more heavy on RAM compared to CPU. They are well suited for memory-intensive applications.
+Memory Optimized Instances are designed to deliver fast performance for workloads that process large data sets in memory, which is quite different from handling high read and write capacity on local storage.
+
+
 
 ##### Examples
 - High-performance in-memory databases
@@ -40,7 +47,7 @@ If you have a requirement like "in memory cache", "in-memory database", "real-ti
 
 ### Storage Optimized (D Series, I Series)
 
-Optimized for local NVMe SSD with a lot of IOPS and throughput. They are well suited for workloads that require high, sequential read and write access to very large data sets on local storage.
+Optimized for local NVMe SSD with a lot of IOPS and throughput. They are well suited for workloads that require high, sequential read and write access to very large data sets on local storage. They are optimized to deliver tens of thousands of low-latency, random I/O operations per second (IOPS) to applications.
 
 ##### Examples
 - NoSQL databases like Cassandra and MongoDB

@@ -41,7 +41,7 @@ VPC CIDR → local (always present) — enables internal communication within th
 
 0.0.0.0/0 → nat-xxxx — sends Internet-bound traffic from private subnets through a NAT Gateway.
 
-Other routes (e.g. 10.1.0.0/16 → pcx-xxxx, → tgw-xxxx, → vpce-xxxx) handle peering, transit gateways, or VPC endpoints.
+Other routes (e.g. 10.1.0.0/16 → pcx-xxxx, → tgw-xxxx, → vpce-xxxx) handle peering, transit gateways, or VPC endpoints (endpoints that are private connections between your VPC and supported AWS services without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection).
 
 [Route tables](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html) control egress paths.
 Inbound traffic is governed separately by gateways and security groups.
@@ -49,3 +49,7 @@ Inbound traffic is governed separately by gateways and security groups.
 #### Internet Gateway
 
 A [gateway](https://docs.aws.amazon.com/vpc/latest/userguide/extend-intro.html) connects your VPC to another network. For example, use an internet gateway to connect your VPC to the internet. Use a VPC endpoint to connect to AWS services privately, without the use of an internet gateway or NAT device.
+
+
+### VPC Endpoints
+VPC Endpoints are endpoints that allow private connections between your VPC and supported AWS services without requiring an internet gateway, NAT device, VPN connection, or AWS Direct Connect connection. Instances in your VPC do not require public IP addresses to communicate with resources in the service. Traffic between your VPC and the other service does not leave the Amazon network.

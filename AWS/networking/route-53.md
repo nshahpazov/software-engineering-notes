@@ -30,6 +30,240 @@ Route 53 is a scalable and highly available Domain Name System (DNS) web service
 - **Geoproximity Routing**: Routes traffic based on the geographic location of resources and users, with the ability to shift traffic by adjusting bias.
 
 
+## Failover Types and Strategies
+
+Failover strategies determine how traffic is distributed between resources during normal operations and during failures. Route 53 supports different failover configurations depending on your availability requirements.
+
+### Active-Active Failover
+
+In an **active-active** configuration, all resources are actively serving traffic simultaneously. If one resource becomes unhealthy, Route 53 stops routing traffic to it, but the remaining healthy resources continue to handle requests.
+
+**Characteristics:**
+- All resources handle traffic during normal operations
+- Traffic is distributed across multiple endpoints
+- Higher resource utilization and better performance
+- If one endpoint fails, traffic is redistributed to remaining healthy endpoints
+- No "standby" resources sitting idle
+
+**Route 53 Implementation:**
+- Use **Weighted**, **Latency-Based**, **Geolocation**, or **Geoproximity** routing policies
+- Associate health checks with all records
+- Route 53 automatically excludes unhealthy endpoints from DNS responses
+
+```
+┌─────────────┐
+│   Route 53  │
+└──────┬──────┘
+       │ (health checks on all)
+       ├────────────────┬────────────────┐
+       ▼                ▼                ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│ Region A    │  │ Region B    │  │ Region C    │
+│ (Active)    │  │ (Active)    │  │ (Active)    │
+└─────────────┘  └─────────────┘  └─────────────┘
+```
+
+**Example: Weighted Active-Active**
+```bash
+# Create weighted records with health checks
+aws route53 change-resource-record-sets \
+  --hosted-zone-id Z123EXAMPLE \
+  --change-batch '{
+    "Changes": [
+      {
+        "Action": "CREATE",
+        "ResourceRecordSet": {
+          "Name": "api.example.com",
+          "Type": "A",
+          "SetIdentifier": "us-east-1",
+          "Weight": 50,
+          "HealthCheckId": "hc-123",
+          "AliasTarget": {
+            "HostedZoneId": "Z1234",
+            "DNSName": "alb-us-east-1.example.com",
+            "EvaluateTargetHealth": true
+          }
+        }
+      },
+      {
+        "Action": "CREATE",
+        "ResourceRecordSet": {
+          "Name": "api.example.com",
+          "Type": "A",
+          "SetIdentifier": "eu-west-1",
+          "Weight": 50,
+          "HealthCheckId": "hc-456",
+          "AliasTarget": {
+            "HostedZoneId": "Z5678",
+            "DNSName": "alb-eu-west-1.example.com",
+            "EvaluateTargetHealth": true
+          }
+        }
+      }
+    ]
+  }'
+```
+
+### Active-Passive Failover
+
+In an **active-passive** (also called **active-standby**) configuration, the primary resource handles all traffic during normal operations. The secondary (passive) resource only receives traffic when the primary becomes unhealthy.
+
+**Characteristics:**
+- Primary resource handles 100% of traffic during normal operations
+- Secondary resource is on standby (idle or minimal traffic)
+- Traffic only shifts to secondary when primary fails health check
+- Lower cost if secondary runs on reduced capacity
+- Clear designation of primary vs. backup
+
+**Route 53 Implementation:**
+- Use **Failover** routing policy
+- Create one record marked as **Primary** and another as **Secondary**
+- Associate health check with the primary record
+- Route 53 automatically switches to secondary when primary is unhealthy
+
+```
+┌─────────────┐
+│   Route 53  │
+└──────┬──────┘
+       │ (health check on primary)
+       │
+       ├───────────────────────────┐
+       ▼                           ▼
+┌─────────────┐             ┌─────────────┐
+│ Primary     │──(fails)──▶ │ Secondary   │
+│ (Active)    │             │ (Passive)   │
+└─────────────┘             └─────────────┘
+   100% traffic               0% traffic
+                              (until failover)
+```
+
+**Example: Failover Active-Passive**
+```bash
+# Create primary record
+aws route53 change-resource-record-sets \
+  --hosted-zone-id Z123EXAMPLE \
+  --change-batch '{
+    "Changes": [{
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "app.example.com",
+        "Type": "A",
+        "SetIdentifier": "primary",
+        "Failover": "PRIMARY",
+        "HealthCheckId": "hc-primary-123",
+        "AliasTarget": {
+          "HostedZoneId": "Z1234",
+          "DNSName": "primary-alb.example.com",
+          "EvaluateTargetHealth": true
+        }
+      }
+    }]
+  }'
+
+# Create secondary record (no health check required, but recommended)
+aws route53 change-resource-record-sets \
+  --hosted-zone-id Z123EXAMPLE \
+  --change-batch '{
+    "Changes": [{
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "app.example.com",
+        "Type": "A",
+        "SetIdentifier": "secondary",
+        "Failover": "SECONDARY",
+        "AliasTarget": {
+          "HostedZoneId": "Z5678",
+          "DNSName": "secondary-alb.example.com",
+          "EvaluateTargetHealth": true
+        }
+      }
+    }]
+  }'
+```
+
+### Comparison: Active-Active vs. Active-Passive
+
+| Aspect | Active-Active | Active-Passive |
+|--------|---------------|----------------|
+| **Traffic Distribution** | All resources serve traffic | Only primary serves traffic |
+| **Resource Utilization** | High (all resources used) | Lower (standby is idle) |
+| **Failover Speed** | Immediate (already serving) | Requires DNS propagation |
+| **Cost** | Higher (all resources always running) | Lower (standby can be smaller) |
+| **Complexity** | Higher (load balancing logic) | Simpler (binary primary/secondary) |
+| **Use Case** | High-traffic, low-latency apps | Disaster recovery, cost-sensitive |
+| **Route 53 Policies** | Weighted, Latency, Geo, Multivalue | Failover routing policy |
+
+### Health Checks for Failover
+
+Health checks are essential for both failover types. Route 53 supports three types:
+
+1. **Endpoint Health Checks**: Monitor an endpoint directly (HTTP, HTTPS, TCP)
+2. **Calculated Health Checks**: Combine results of multiple health checks (AND, OR, M of N)
+3. **CloudWatch Alarm Health Checks**: Based on CloudWatch alarm state
+
+**Health Check Configuration:**
+```bash
+aws route53 create-health-check \
+  --caller-reference $(date +%s) \
+  --health-check-config '{
+    "IPAddress": "203.0.113.1",
+    "Port": 443,
+    "Type": "HTTPS",
+    "ResourcePath": "/health",
+    "FullyQualifiedDomainName": "app.example.com",
+    "RequestInterval": 30,
+    "FailureThreshold": 3,
+    "EnableSNI": true
+  }'
+```
+
+### Multi-Region Failover Architectures
+
+#### Active-Active Multi-Region
+```
+                    ┌─────────────┐
+                    │   Route 53  │
+                    │  (Latency)  │
+                    └──────┬──────┘
+         ┌─────────────────┼─────────────────┐
+         ▼                 ▼                 ▼
+   ┌───────────┐    ┌───────────┐    ┌───────────┐
+   │ us-east-1 │    │ eu-west-1 │    │ ap-south-1│
+   │   (ALB)   │    │   (ALB)   │    │   (ALB)   │
+   └─────┬─────┘    └─────┬─────┘    └─────┬─────┘
+         ▼                ▼                ▼
+   ┌───────────┐    ┌───────────┐    ┌───────────┐
+   │  DynamoDB │◀──▶│  DynamoDB │◀──▶│  DynamoDB │
+   │  Global   │    │  Global   │    │  Global   │
+   └───────────┘    └───────────┘    └───────────┘
+```
+
+#### Active-Passive Multi-Region (DR)
+```
+                    ┌─────────────┐
+                    │   Route 53  │
+                    │ (Failover)  │
+                    └──────┬──────┘
+         ┌─────────────────┴─────────────────┐
+         ▼                                   ▼
+   ┌───────────┐                      ┌───────────┐
+   │ us-east-1 │  ────(replication)──▶│ us-west-2 │
+   │ (PRIMARY) │                      │(SECONDARY)│
+   └───────────┘                      └───────────┘
+       Active                           Standby
+```
+
+### Best Practices for Failover
+
+1. **Set appropriate health check intervals**: Balance between quick detection (10s) and cost (30s)
+2. **Use multiple health checkers**: Route 53 uses health checkers from multiple locations
+3. **Configure failure thresholds**: Avoid false positives with appropriate thresholds (typically 3)
+4. **Test failover regularly**: Simulate failures to ensure failover works as expected
+5. **Monitor health check status**: Set up CloudWatch alarms for health check failures
+6. **Consider TTL values**: Lower TTL = faster failover but more DNS queries (and cost)
+7. **Use alias records with EvaluateTargetHealth**: Automatically inherit health of target resources
+
+
 ## Hosted Zones
 
 Hosted zones are containers for records that belong to a single domain name. There are two types of hosted zones:
